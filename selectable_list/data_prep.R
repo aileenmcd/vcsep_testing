@@ -6,7 +6,8 @@ library(sf)
 # LTLA & UTLA data -------
 ltla21 <- boundaries_ltla21 |>
   mutate(type = "Local Authority", .before = "geometry") |>
-  rename(code = ltla21_code, name = ltla21_name)
+  rename(code = ltla21_code, name = ltla21_name) |>
+  filter(str_detect(code, "^E"))
 
 # Don't include Counties that have 1-2-1 match with Local Authority
 utla21 <- lookup_ltla21_utla21 |>

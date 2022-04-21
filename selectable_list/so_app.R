@@ -1,3 +1,4 @@
+#Source https://stackoverflow.com/questions/65893124/select-multiple-items-using-map-click-in-leaflet-linked-to-selectizeinput-in
 library(shiny)
 library(leaflet)
 library(sf)
@@ -7,8 +8,8 @@ library(dplyr)
 nc <- st_read(system.file("shape/nc.shp", package="sf")) %>%
   st_transform(4326)
 
-shinyApp(
-  ui = fluidPage(
+
+  ui <- fluidPage(
     
     "Update selectize input by clicking on the map",
     
@@ -20,11 +21,12 @@ shinyApp(
                    choices = nc$NAME,
                    selected = NULL,
                    multiple = TRUE)
-  ),
+  )
   
   server <- function(input, output, session){
     
     #create empty vector to hold all click ids
+    # AM - unsure if this is used anywhere??
     selected_ids <- reactiveValues(ids = vector())
     
     #initial map output
@@ -58,6 +60,9 @@ shinyApp(
     selected <- reactiveValues(groups = vector())
     
     observeEvent(input$map_shape_click, {
+      
+      if(input$map_shape_click$group != "regions") {browser()}
+      
       if(input$map_shape_click$group == "regions"){
         selected$groups <- c(selected$groups, input$map_shape_click$id)
         proxy %>% showGroup(group = input$map_shape_click$id)
@@ -73,6 +78,9 @@ shinyApp(
     })
     
     observeEvent(input$selected_locations, {
+      
+  #    if (length(input$selected_locations) > 0) {browser()}
+      
       removed_via_selectInput <- setdiff(selected$groups, input$selected_locations)
       added_via_selectInput <- setdiff(input$selected_locations, selected$groups)
       
@@ -85,6 +93,6 @@ shinyApp(
         selected$groups <- input$selected_locations
         proxy %>% showGroup(group = added_via_selectInput)
       }
-    }, ignoreNULL = FALSE)
+    }, ignoreNULL = FALSE)}
     
-  })
+  shinyApp(ui = ui, server = server, options = list(display.mode = 'showcase'))

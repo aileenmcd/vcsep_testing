@@ -15,10 +15,10 @@ shinyUI(fluidPage(
     )
   ),
   fluidRow(
-    verbatimTextOutput("selected_text")
-  ),
-  fluidRow(
     leafletOutput("map")  |>
       withSpinner()
-  )
+  ),
+  fluidRow(
+    tableOutput("selected_areas_table")
+  ),
 ))
